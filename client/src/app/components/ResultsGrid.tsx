@@ -10,6 +10,7 @@ import {
 interface ImageResult {
   size: number;
   url: string;
+  format: string;
 }
 
 interface ResultsGridProps {

@@ -16,10 +16,11 @@ class ImageService {
     this.baseUrl = baseUrl;
   }
 
-  async resizeImage(file: File, sizes: string): Promise<ImageResult[]> {
+  async resizeImage(file: File, sizes: string, format: string): Promise<ImageResult[]> {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("sizes", sizes);
+    formData.append("format", format);
 
     const response = await fetch(`${this.baseUrl}/resize`, {
       method: "POST",
@@ -40,10 +41,10 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const service = new ImageService("http://localhost:4000");
 
-  const handleResize = async (file: File, sizes: string) => {
+  const handleResize = async (file: File, sizes: string, format: string) => {
     try {
       setLoading(true);
-      const images = await service.resizeImage(file, sizes);
+      const images = await service.resizeImage(file, sizes, format);
       setResults(images);
     } catch (err) {
       console.error(err);

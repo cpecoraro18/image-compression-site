@@ -5,16 +5,21 @@ import {
   Button,
   Paper,
   Stack,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 
 interface UploadFormProps {
-  onResize: (file: File, sizes: string) => void;
+  onResize: (file: File, sizes: string, format: string) => void;
   disabled: boolean;
 }
 
 const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [sizes, setSizes] = useState("480,800,1200");
+  const [format, setFormat] = useState("webp");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,11 +57,25 @@ const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
           fullWidth
         />
 
+        <FormControl fullWidth>
+          <InputLabel id="format-label">Format</InputLabel>
+          <Select
+            labelId="format-label"
+            value={format}
+            label="Format"
+            onChange={(e) => setFormat(e.target.value)}
+          >
+            <MenuItem value="webp">WebP</MenuItem>
+            <MenuItem value="jpeg">JPEG</MenuItem>
+            <MenuItem value="png">PNG</MenuItem>
+          </Select>
+        </FormControl>
+
         <Button
           variant="contained"
           color="primary"
           disabled={disabled || !file}
-          onClick={() => file && onResize(file, sizes)}
+          onClick={() => file && onResize(file, sizes, format)}
           sx={{ alignSelf: "center" }}
         >
           Resize & Download

@@ -32,17 +32,24 @@ app.post("/resize", upload.single("image"), async (req, res) => {
 
   if (sizes.length === 0) return res.status(400).json({ error: "No valid sizes provided" });
 
+  const format = (req.body.format || "webp").toLowerCase();
+  const validFormats = ["webp", "jpeg", "png"];
+  if (!validFormats.includes(format)) return res.status(400).json({ error: "Invalid format" });
+
   const outputs = [];
 
   try {
     for (const size of sizes) {
-      const filename = `${uuidv4()}-${size}.webp`;
+      const filename = `${uuidv4()}-${size}.${format}`;
       const outputPath = path.join(uploadFolder, filename);
 
-      await sharp(req.file.path)
-        .resize({ width: size })
-        .webp({ quality: 90, effort: 4, lossless: false })
-        .toFile(outputPath);
+      let pipeline = sharp(req.file.path).resize({ width: size });
+
+      if (format === "webp") pipeline = pipeline.webp({ quality: 90, effort: 4, lossless: false });
+      else if (format === "jpeg") pipeline = pipeline.jpeg({ quality: 90 });
+      else if (format === "png") pipeline = pipeline.png({ compressionLevel: 9 });
+
+      await pipeline.toFile(outputPath);
 
       outputs.push({
         size,

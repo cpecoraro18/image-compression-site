@@ -1,0 +1,25 @@
+# App Specific
+
+/src/uploads/
+
+# Node build output
+/dist
+/build
+
+# Local env
+.env
+
+# Logs
+logs/
+*.log
+
+# Database files
+*.sqlite
+*.db
+
+# npm package lock (optional, if you want it ignored)
+package-lock.json
+yarn.lock
+
+# Coverage
+coverage/
