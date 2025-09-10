@@ -20,24 +20,28 @@ A simple web application for resizing and compressing images directly in the bro
 ## Usage
 
 1. Clone the repository:
-
+```bash
 git clone https://github.com/your-username/image-compression-site.git
-
+```
 2. Install dependencies:
+```bash
 cd backend
 npm install
 cd ../frontend
 npm install
-
+```
 
 3. Run backend:
+```bash
 cd backend
 npm run dev
-
+```
 
 4. Run frontend:
+```bash
 cd frontend
 npm start
+```
 Open your browser at http://localhost:3000 and upload an image to start resizing.
 
 License
