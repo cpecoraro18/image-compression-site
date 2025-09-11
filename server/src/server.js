@@ -16,12 +16,11 @@ const upload = multer({ dest: uploadFolder, limits: { fileSize: 40 * 1024 * 1024
 
 app.use(cors());
 app.use("/files", express.static(uploadFolder));
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post("/resize", upload.single("image"), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+app.post("/resize", upload.array("images"), async (req, res) => {
+  if (!req.files || req.files.length === 0) return res.status(400).json({ error: "No files uploaded" });
 
   const sizes = req.body.sizes
     ? req.body.sizes
@@ -39,30 +38,33 @@ app.post("/resize", upload.single("image"), async (req, res) => {
   const outputs = [];
 
   try {
-    for (const size of sizes) {
-      const filename = `${uuidv4()}-${size}.${format}`;
-      const outputPath = path.join(uploadFolder, filename);
+    for (const file of req.files) {
+      for (const size of sizes) {
+        const filename = `${uuidv4()}-${size}.${format}`;
+        const outputPath = path.join(uploadFolder, filename);
 
-      let pipeline = sharp(req.file.path).resize({ width: size });
+        let pipeline = sharp(file.path).resize({ width: size });
 
-      if (format === "webp") pipeline = pipeline.webp({ quality: 90, effort: 4, lossless: false });
-      else if (format === "jpeg") pipeline = pipeline.jpeg({ quality: 90 });
-      else if (format === "png") pipeline = pipeline.png({ compressionLevel: 9 });
+        if (format === "webp") pipeline = pipeline.webp({ quality: 90, effort: 4, lossless: false });
+        else if (format === "jpeg") pipeline = pipeline.jpeg({ quality: 90 });
+        else if (format === "png") pipeline = pipeline.png({ compressionLevel: 9 });
 
-      await pipeline.toFile(outputPath);
+        await pipeline.toFile(outputPath);
 
-      outputs.push({
-        size,
-        url: `http://localhost:${PORT}/files/${filename}`,
-      });
+        outputs.push({
+          originalName: file.originalname,
+          size,
+          url: `http://localhost:${PORT}/files/${filename}`,
+        });
+      }
+
+      await fs.promises.unlink(file.path);
     }
-
-    await fs.promises.unlink(req.file.path);
 
     res.json({ images: outputs });
   } catch (err) {
     console.error("Resize error:", err);
-    res.status(500).json({ error: "Failed to process image", details: err.message });
+    res.status(500).json({ error: "Failed to process images", details: err.message });
   }
 });
 

@@ -16,9 +16,9 @@ class ImageService {
     this.baseUrl = baseUrl;
   }
 
-  async resizeImage(file: File, sizes: string, format: string): Promise<ImageResult[]> {
+  async resizeImage(files: File[], sizes: string, format: string): Promise<ImageResult[]> {
     const formData = new FormData();
-    formData.append("image", file);
+    files.forEach(file => formData.append("images", file));
     formData.append("sizes", sizes);
     formData.append("format", format);
 
@@ -41,10 +41,10 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const service = new ImageService("http://localhost:4000");
 
-  const handleResize = async (file: File, sizes: string, format: string) => {
+  const handleResize = async (files: File[], sizes: string, format: string) => {
     try {
       setLoading(true);
-      const images = await service.resizeImage(file, sizes, format);
+      const images = await service.resizeImage(files, sizes, format);
       setResults(images);
     } catch (err) {
       console.error(err);

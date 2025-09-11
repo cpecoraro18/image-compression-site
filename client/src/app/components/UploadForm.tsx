@@ -12,18 +12,18 @@ import {
 } from "@mui/material";
 
 interface UploadFormProps {
-  onResize: (file: File, sizes: string, format: string) => void;
+  onResize: (files: File[], sizes: string, format: string) => void;
   disabled: boolean;
 }
 
 const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [sizes, setSizes] = useState("480,800,1200");
   const [format, setFormat] = useState("webp");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      setFiles(Array.from(e.target.files));
     }
   };
 
@@ -35,18 +35,19 @@ const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
         </Typography>
 
         <Button variant="contained" component="label">
-          {file ? "Change Image" : "Upload Image"}
+          {files.length ? "Change Images" : "Upload Images"}
           <input
             hidden
             type="file"
             accept="image/*"
+            multiple
             onChange={handleFileChange}
           />
         </Button>
 
-        {file && (
+        {files.length > 0 && (
           <Typography variant="body1" align="center">
-            Selected: {file.name}
+            Selected: {files.map((file) => file.name).join(", ")}
           </Typography>
         )}
 
@@ -74,8 +75,8 @@ const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
         <Button
           variant="contained"
           color="primary"
-          disabled={disabled || !file}
-          onClick={() => file && onResize(file, sizes, format)}
+          disabled={disabled || !files.length}
+          onClick={() => files.length && onResize(files, sizes, format)}
           sx={{ alignSelf: "center" }}
         >
           Resize & Download
