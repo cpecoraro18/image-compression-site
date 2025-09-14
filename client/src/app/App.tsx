@@ -1,50 +1,21 @@
 import { useState } from "react";
-import {
-  Container,
-} from "@mui/material";
+import { Container } from "@mui/material";
 
 import UploadForm from "./components/UploadForm";
 import ResultsGrid from "./components/ResultsGrid";
 
-// -------------------
-// API Service
-// -------------------
-class ImageService {
-  private baseUrl: string;
+import resizeImage from "../api/ImageService";
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-
-  async resizeImage(files: File[], sizes: string, format: string): Promise<ImageResult[]> {
-    const formData = new FormData();
-    files.forEach(file => formData.append("images", file));
-    formData.append("sizes", sizes);
-    formData.append("format", format);
-
-    const response = await fetch(`${this.baseUrl}/resize`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to resize image");
-    }
-
-    const data = await response.json();
-    return data.images as ImageResult[];
-  }
-}
+import type { ImageResult } from "../types/ImageResult";
 
 const App = () => {
   const [results, setResults] = useState<ImageResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const service = new ImageService("http://localhost:4000");
 
   const handleResize = async (files: File[], sizes: string, format: string) => {
     try {
       setLoading(true);
-      const images = await service.resizeImage(files, sizes, format);
+      const images = await resizeImage("http://localhost:4000", files, sizes, format);
       setResults(images);
     } catch (err) {
       console.error(err);

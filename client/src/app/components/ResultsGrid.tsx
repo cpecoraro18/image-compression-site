@@ -1,4 +1,5 @@
-
+import * as React from "react";
+import { JSX } from "react"
 import {
   Grid,
   Button,
@@ -7,17 +8,15 @@ import {
   CardActions,
 } from "@mui/material";
 
-interface ImageResult {
-  size: number;
-  url: string;
-  format: string;
-}
+import type { ImageResult } from "../../types/ImageResult";
 
 interface ResultsGridProps {
   results: ImageResult[];
 }
 
-const ResultsGrid = ({ results }: ResultsGridProps) => (
+export function ResultsGrid ( props: ResultsGridProps ) : JSX.Element {
+
+  return (
   <Grid container spacing={3} sx={{ mt: 4 }}>
     {results.map((img) => (
       <Grid key={img.url}>
@@ -44,6 +43,7 @@ const ResultsGrid = ({ results }: ResultsGridProps) => (
       </Grid>
     ))}
   </Grid>
+  )
 );
 
 export default ResultsGrid;
