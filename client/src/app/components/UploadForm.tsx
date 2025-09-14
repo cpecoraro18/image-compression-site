@@ -1,25 +1,40 @@
-import { useState } from "react";
+import type { JSX } from "react"
+import { useState, useCallback } from "react";
 import {
   Typography,
   TextField,
   Button,
   Paper,
+  Box,
   Stack,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
 } from "@mui/material";
+import { useDropzone } from "react-dropzone";
 
 interface UploadFormProps {
   onResize: (files: File[], sizes: string, format: string) => void;
   disabled: boolean;
 }
 
-const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
+export function UploadForm ( props : UploadFormProps ) : JSX.Element {
+  const { onResize, disabled } = props;
+
   const [files, setFiles] = useState<File[]>([]);
   const [sizes, setSizes] = useState("480,800,1200");
   const [format, setFormat] = useState("webp");
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { "image/*": [] },
+    multiple: true,
+    onDrop,
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -33,6 +48,25 @@ const UploadForm = ({ onResize, disabled }: UploadFormProps) => {
         <Typography variant="h4" align="center">
           Image Resizer
         </Typography>
+
+        <Box
+          {...getRootProps()}
+          sx={{
+            border: "2px dashed",
+            borderColor: isDragActive ? "primary.main" : "grey.400",
+            p: 4,
+            textAlign: "center",
+            cursor: "pointer",
+            bgcolor: isDragActive ? "action.hover" : "background.paper",
+          }}
+        >
+          <input {...getInputProps()} />
+          <Typography>
+            {isDragActive
+              ? "Drop the files here…"
+              : "Drag & drop images here"}
+          </Typography>
+        </Box>
 
         <Button variant="contained" component="label">
           {files.length ? "Change Images" : "Upload Images"}

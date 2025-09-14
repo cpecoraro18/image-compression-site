@@ -1,5 +1,4 @@
-import * as React from "react";
-import { JSX } from "react"
+import type { JSX } from "react"
 import {
   Grid,
   Button,
@@ -15,6 +14,7 @@ interface ResultsGridProps {
 }
 
 export function ResultsGrid ( props: ResultsGridProps ) : JSX.Element {
+  const { results } = props;
 
   return (
   <Grid container spacing={3} sx={{ mt: 4 }}>
@@ -43,7 +43,7 @@ export function ResultsGrid ( props: ResultsGridProps ) : JSX.Element {
       </Grid>
     ))}
   </Grid>
-  )
-);
+  );
+}
 
 export default ResultsGrid;
