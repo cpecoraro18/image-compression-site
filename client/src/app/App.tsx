@@ -29,6 +29,7 @@ const App = () => {
     <Container
       sx={{
         minHeight: "100vh",
+        minWidth: "85vw",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

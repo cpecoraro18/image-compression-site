@@ -51,13 +51,21 @@ app.post("/resize", upload.array("images"), async (req, res) => {
 
         await pipeline.toFile(outputPath);
 
+        const { width, height, size: fileSize } = await sharp(outputPath).metadata();
+        const stats = await fs.promises.stat(outputPath);
+
         outputs.push({
+          id: filename.split("-")[0],
           originalName: file.originalname,
           size,
+          width,
+          height,
+          fileSize: stats.size,
+          format,
           url: `http://localhost:${PORT}/files/${filename}`,
+          createdAt: new Date().toISOString(),
         });
       }
-
       await fs.promises.unlink(file.path);
     }
 
